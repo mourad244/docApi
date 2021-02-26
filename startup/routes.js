@@ -1,5 +1,5 @@
 const express = require("express");
-const clients = require("../routes/clients");
+const patients = require("../routes/patients");
 const users = require("../routes/users");
 const auth = require("../routes/auth");
 const error = require("../middleware/error");
@@ -11,7 +11,7 @@ module.exports = function (app) {
   app.use(bodyparser.json());
   app.use(bodyparser.urlencoded({ extended: true }));
   app.use(express.json());
-  app.use("/docapi/clients", clients);
+  app.use("/docapi/patients", patients);
   app.use("/docapi/users", users);
   app.use("/docapi/auth", auth);
   app.use(error);

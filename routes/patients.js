@@ -1,14 +1,15 @@
-const { Client, validate } = require("../models/client");
+const { Patient, validate } = require("../models/patient");
 const auth = require("../middleware/auth");
 const admin = require("../middleware/admin");
 const express = require("express");
 const router = express.Router();
 
+// get all patients
 router.get("/", async (req, res) => {
-  const clients = await Client.find().select("-__v");
-  res.send(clients);
+  const patients = await Patient.find().select("-__v");
+  res.send(patients);
 });
-// ajouter client
+// ajouter patient
 router.post("/" /* , auth */, async (req, res) => {
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
@@ -24,7 +25,7 @@ router.post("/" /* , auth */, async (req, res) => {
     sex,
   } = req.body;
 
-  let client = new Client({
+  let patient = new Patient({
     fName: fName,
     lName: lName,
     phone: phone,
@@ -35,12 +36,12 @@ router.post("/" /* , auth */, async (req, res) => {
     address: address,
     sex: sex,
   });
-  client = await client.save();
+  patient = await patient.save();
 
-  res.send(client);
+  res.send(patient);
 });
 
-// modifier client
+// modifier patient
 router.put("/:id" /* , auth */, async (req, res) => {
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
@@ -55,7 +56,7 @@ router.put("/:id" /* , auth */, async (req, res) => {
     address,
     sex,
   } = req.body;
-  const client = await Client.findByIdAndUpdate(
+  const patient = await Patient.findByIdAndUpdate(
     req.params.id,
     {
       fName: fName,
@@ -71,28 +72,28 @@ router.put("/:id" /* , auth */, async (req, res) => {
     { new: true }
   );
 
-  if (!client)
-    return res.status(404).send("The client with the given ID was not found.");
+  if (!patient)
+    return res.status(404).send("The patient with the given ID was not found.");
 
-  res.send(client);
+  res.send(patient);
 });
 // get by id
 router.get("/:id" /* , auth */, async (req, res) => {
-  const client = await Client.findById(req.params.id).select("-__v");
+  const patient = await Patient.findById(req.params.id).select("-__v");
 
-  if (!client)
-    return res.status(404).send("The client with the given ID was not found.");
+  if (!patient)
+    return res.status(404).send("The patient with the given ID was not found.");
 
-  res.send(client);
+  res.send(patient);
 });
-// supprimer client
+// supprimer patient
 router.delete("/:id", [auth, admin], async (req, res) => {
-  const client = await Client.findByIdAndRemove(req.params.id);
+  const patient = await Patient.findByIdAndRemove(req.params.id);
 
-  if (!client)
-    return res.status(404).send("The client with the given ID was not found.");
+  if (!patient)
+    return res.status(404).send("The patient with the given ID was not found.");
 
-  res.send(client);
+  res.send(patient);
 });
 
 module.exports = router;

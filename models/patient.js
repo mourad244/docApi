@@ -1,6 +1,6 @@
 const Joi = require("joi");
 const mongoose = require("mongoose");
-const clientSchema = new mongoose.Schema({
+const patientSchema = new mongoose.Schema({
   fName: {
     type: String,
     required: true,
@@ -47,9 +47,9 @@ const clientSchema = new mongoose.Schema({
 });
 //nom,prenom,Numero TEl, Mutuelle, email, fonction, situation familiale, date naissance, adress,sex
 
-const Client = mongoose.model("Client", clientSchema);
+const Patient = mongoose.model("Patient", patientSchema);
 
-function validateClient(client) {
+function validatePatient(patient) {
   const schema = Joi.object({
     fName: Joi.string().min(3).max(50).required(),
     lName: Joi.string().min(3).max(50).required(),
@@ -60,9 +60,9 @@ function validateClient(client) {
     sex: Joi.string().required(),
   });
 
-  return schema.validate(client);
+  return schema.validate(patient);
 }
 
-exports.clientSchema = clientSchema;
-exports.Client = Client;
-exports.validateClient = validateClient;
+exports.patientSchema = patientSchema;
+exports.Patient = Patient;
+exports.validatePatient = validatePatient;
