@@ -1,13 +1,20 @@
 const Joi = require("joi");
 const mongoose = require("mongoose");
+const moment = require("moment");
+
 const patientSchema = new mongoose.Schema({
+  cin: {
+    type: String,
+    minlength: 3,
+    maxlength: 10,
+  },
   fName: {
     type: String,
     required: true,
     minlength: 3,
     maxlength: 50,
   },
-  LName: {
+  lName: {
     type: String,
     required: true,
     minlength: 3,
@@ -21,7 +28,7 @@ const patientSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    required: true,
+    // required: true,
     minlength: 5,
     maxlength: 50,
   },
@@ -33,36 +40,39 @@ const patientSchema = new mongoose.Schema({
     type: String,
     maxlength: 50,
   },
-  dateOfBirth: {
+  birthDate: {
     type: Date,
   },
   address: {
     type: String,
     maxlength: 255,
   },
-  sex: {
+  gender: {
     type: String,
     required: true,
   },
+  age: Number,
+  appointments: [
+    {
+      type: new mongoose.Schema({
+        startTime: {
+          type: Date,
+        },
+        type: {
+          type: String,
+          trim: true,
+        },
+        honnore: {
+          type: Boolean,
+        },
+      }),
+    },
+  ],
 });
-//nom,prenom,Numero TEl, Mutuelle, email, fonction, situation familiale, date naissance, adress,sex
+
+//nom,prenom,Numero TEl, Mutuelle, email, fonction, situation familiale, date naissance, adress,gender
 
 const Patient = mongoose.model("Patient", patientSchema);
 
-function validatePatient(patient) {
-  const schema = Joi.object({
-    fName: Joi.string().min(3).max(50).required(),
-    lName: Joi.string().min(3).max(50).required(),
-    phone: Joi.string().min(5).max(50).required(),
-    email: Joi.string().min(5).max(50).required(),
-    fonction: Joi.string().max(50),
-    familySituation: Joi.string().max(50),
-    sex: Joi.string().required(),
-  });
-
-  return schema.validate(patient);
-}
-
 exports.patientSchema = patientSchema;
 exports.Patient = Patient;
-exports.validatePatient = validatePatient;

@@ -1,17 +1,26 @@
-const { Patient, validate } = require("../models/patient");
+const { Patient } = require("../models/patient");
 const auth = require("../middleware/auth");
 const admin = require("../middleware/admin");
 const express = require("express");
+const validations = require("../startup/validations");
+
+const validateObjectId = require("../middleware/validateObjectId");
+const moment = require("moment");
 const router = express.Router();
 
 // get all patients
 router.get("/", async (req, res) => {
   const patients = await Patient.find().select("-__v");
+
+  // add age
+  patients.map((patient) => {
+    patient.age = moment().diff(patient.birthDate, "years");
+  });
   res.send(patients);
 });
 // ajouter patient
-router.post("/" /* , auth */, async (req, res) => {
-  const { error } = validate(req.body);
+router.post("/", auth, async (req, res) => {
+  const { error } = validations.patient(req.body);
   if (error) return res.status(400).send(error.details[0].message);
   const {
     fName,
@@ -20,9 +29,9 @@ router.post("/" /* , auth */, async (req, res) => {
     email,
     fonction,
     familySituation,
-    dateOfBirth,
+    birthDate,
     address,
-    sex,
+    gender,
   } = req.body;
 
   let patient = new Patient({
@@ -32,9 +41,9 @@ router.post("/" /* , auth */, async (req, res) => {
     email: email,
     fonction: fonction,
     familySituation: familySituation,
-    dateOfBirth: dateOfBirth,
+    birthDate: birthDate,
     address: address,
-    sex: sex,
+    gender: gender,
   });
   patient = await patient.save();
 
@@ -42,8 +51,8 @@ router.post("/" /* , auth */, async (req, res) => {
 });
 
 // modifier patient
-router.put("/:id" /* , auth */, async (req, res) => {
-  const { error } = validate(req.body);
+router.put("/:id", auth, async (req, res) => {
+  const { error } = validations.patient(req.body);
   if (error) return res.status(400).send(error.details[0].message);
   const {
     fName,
@@ -52,9 +61,9 @@ router.put("/:id" /* , auth */, async (req, res) => {
     email,
     fonction,
     familySituation,
-    dateOfBirth,
+    birthDate,
     address,
-    sex,
+    gender,
   } = req.body;
   const patient = await Patient.findByIdAndUpdate(
     req.params.id,
@@ -65,9 +74,9 @@ router.put("/:id" /* , auth */, async (req, res) => {
       email: email,
       fonction: fonction,
       familySituation: familySituation,
-      dateOfBirth: dateOfBirth,
+      birthDate: birthDate,
       address: address,
-      sex: sex,
+      gender: gender,
     },
     { new: true }
   );
@@ -78,7 +87,7 @@ router.put("/:id" /* , auth */, async (req, res) => {
   res.send(patient);
 });
 // get by id
-router.get("/:id" /* , auth */, async (req, res) => {
+router.get("/:id", validateObjectId, auth, async (req, res) => {
   const patient = await Patient.findById(req.params.id).select("-__v");
 
   if (!patient)
