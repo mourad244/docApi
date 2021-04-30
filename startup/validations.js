@@ -11,7 +11,7 @@ module.exports = {
 			fonction: Joi.string().max(50),
 			familySituation: Joi.string().max(50),
 			gender: Joi.string().required(),
-			appointments: Joi.array(),
+			appointments: Joi.array().items(Joi.objectId()),
 			birthDate: Joi.date()
 		});
 
